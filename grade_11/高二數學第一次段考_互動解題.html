@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="高二數學第一次段考指定題目的互動解題教材">
+  <title>高二數學第一次段考｜互動解題</title>
+  <style>
+    :root {
+      --ink: #17283d;
+      --muted: #5d6975;
+      --paper: #f6f2e9;
+      --card: #fffdf8;
+      --navy: #18324d;
+      --navy-2: #234d70;
+      --blue-soft: #e8f0f5;
+      --coral: #d85b42;
+      --coral-soft: #f9e7e1;
+      --green: #28765a;
+      --green-soft: #e4f2ec;
+      --amber: #9c641a;
+      --amber-soft: #f8edd8;
+      --line: #d9d3c8;
+      --shadow: 0 10px 30px rgba(23, 40, 61, .08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      line-height: 1.72;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(216, 91, 66, .35);
+      outline-offset: 3px;
+    }
+    .skip-link {
+      position: absolute;
+      left: 12px;
+      top: -80px;
+      z-index: 20;
+      padding: 10px 14px;
+      background: var(--card);
+      color: var(--ink);
+    }
+    .skip-link:focus { top: 12px; }
+
+    .hero {
+      background: var(--navy);
+      color: #fffdf8;
+      padding: 30px clamp(18px, 5vw, 64px) 26px;
+      border-bottom: 6px solid var(--coral);
+    }
+    .hero-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr minmax(220px, 360px);
+      gap: 28px;
+      align-items: end;
+    }
+    .eyebrow {
+      margin: 0 0 6px;
+      color: #f2b5a8;
+      font-weight: 700;
+      letter-spacing: .12em;
+      font-size: .88rem;
+    }
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Noto Serif TC", serif;
+      font-size: clamp(2rem, 4.7vw, 4.1rem);
+      line-height: 1.08;
+      font-weight: 700;
+      letter-spacing: -.035em;
+    }
+    .hero-copy { margin: 12px 0 0; color: #dce8f0; max-width: 750px; }
+    .progress-copy {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 7px;
+      font-size: .92rem;
+      color: #dce8f0;
+    }
+    .progress-track {
+      height: 12px;
+      background: rgba(255,255,255,.15);
+      overflow: hidden;
+      border-radius: 99px;
+    }
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: #f08b72;
+      transition: width .25s ease;
+    }
+
+    .app-shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px clamp(14px, 3vw, 28px) 64px;
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+    .sidebar {
+      position: sticky;
+      top: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .sidebar h2 { margin: 0 0 12px; font-size: 1rem; }
+    .filter-group { display: grid; gap: 7px; margin-bottom: 18px; }
+    .filter-button, .nav-button, .concept-link, .secondary-button, .quiz-button, .stage-button {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      border-radius: 10px;
+      transition: background .16s ease, color .16s ease, border-color .16s ease;
+    }
+    .filter-button { padding: 8px 10px; text-align: left; }
+    .filter-button:hover, .filter-button[aria-pressed="true"] {
+      background: var(--blue-soft);
+      border-color: #9cb3c5;
+      color: var(--navy);
+    }
+    .question-nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .nav-button {
+      min-height: 43px;
+      padding: 6px;
+      font-weight: 700;
+      position: relative;
+    }
+    .nav-button:hover, .nav-button[aria-current="page"] {
+      color: #fff;
+      border-color: var(--navy);
+      background: var(--navy);
+    }
+    .nav-button.completed::after {
+      content: "✓";
+      position: absolute;
+      right: 4px;
+      top: 0;
+      color: var(--green);
+      font-size: .74rem;
+    }
+    .nav-button[aria-current="page"].completed::after { color: #aee0cb; }
+    .overview-button { grid-column: 1 / -1; }
+    .sidebar-note {
+      margin: 16px 0 0;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    main { min-width: 0; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 4vw, 42px);
+    }
+    .page-kicker {
+      color: var(--coral);
+      font-weight: 800;
+      letter-spacing: .08em;
+      margin: 0 0 4px;
+    }
+    h2, h3 { line-height: 1.3; }
+    .panel > h2 { margin: 0; font-size: clamp(1.65rem, 3vw, 2.45rem); }
+    .lead { color: var(--muted); font-size: 1.06rem; max-width: 760px; }
+    .overview-intro {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 24px;
+      align-items: center;
+      padding-bottom: 30px;
+      border-bottom: 1px solid var(--line);
+    }
+    .overview-mark {
+      min-height: 170px;
+      display: grid;
+      place-items: center;
+      background: var(--blue-soft);
+      border-radius: 14px;
+      color: var(--navy);
+      font-family: Georgia, serif;
+      font-size: clamp(2.5rem, 7vw, 5.8rem);
+      letter-spacing: -.05em;
+    }
+    .concept-grid { display: grid; gap: 14px; margin-top: 26px; }
+    .concept-card {
+      border-top: 3px solid var(--navy-2);
+      padding: 18px 0 8px;
+      display: grid;
+      grid-template-columns: minmax(180px, .8fr) 1.2fr;
+      gap: 24px;
+    }
+    .concept-card h3 { margin: 0 0 5px; }
+    .concept-card p { margin: 0; color: var(--muted); }
+    .concept-question-links { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
+    .concept-link { padding: 8px 13px; font-weight: 700; background: var(--card); }
+    .concept-link:hover { background: var(--coral-soft); border-color: #e3a391; }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: start;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .question-title { display: flex; gap: 14px; align-items: center; }
+    .question-number {
+      min-width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 14px;
+      font-family: Georgia, serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+    }
+    .question-title h2 { margin: 0 0 3px; font-size: clamp(1.45rem, 2.7vw, 2.15rem); }
+    .question-meta { margin: 0; color: var(--muted); }
+    .answer-box {
+      min-width: 170px;
+      padding: 12px 15px;
+      background: var(--green-soft);
+      border-left: 4px solid var(--green);
+      border-radius: 7px;
+    }
+    .answer-box small { display: block; color: var(--green); font-weight: 700; }
+    .answer-box strong { font-family: Georgia, "Noto Serif TC", serif; font-size: 1.16rem; }
+    .question-prompt {
+      margin: 26px 0;
+      padding: 19px 21px;
+      border-left: 4px solid var(--coral);
+      background: var(--coral-soft);
+      border-radius: 7px;
+      font-family: Georgia, "Noto Serif TC", serif;
+      font-size: 1.04rem;
+    }
+    .question-prompt ol { margin: 10px 0 0; padding-left: 1.5rem; }
+    .formula {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      white-space: nowrap;
+    }
+    .formula-line {
+      display: block;
+      margin: 9px 0;
+      padding: 8px 12px;
+      background: #f2eee6;
+      border-radius: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.07rem;
+      overflow-x: auto;
+    }
+    .section-block { margin-top: 30px; }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .section-heading span {
+      color: var(--coral);
+      font-weight: 800;
+      font-size: .84rem;
+      letter-spacing: .08em;
+    }
+    .section-heading h3 { margin: 0; font-size: 1.22rem; }
+    .idea-box {
+      background: var(--blue-soft);
+      padding: 18px 20px;
+      border-radius: 12px;
+    }
+    .idea-box p { margin: 0; }
+    .concept-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+    .concept-tag {
+      font-size: .82rem;
+      padding: 4px 9px;
+      border: 1px solid #a8bdcc;
+      color: var(--navy-2);
+      border-radius: 6px;
+    }
+    .visual-wrap {
+      margin: 28px 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fffefb;
+    }
+    .visual-wrap figure { margin: 0; }
+    .visual-wrap figcaption { color: var(--muted); font-size: .88rem; margin-top: 8px; }
+    svg.math-visual { display: block; width: 100%; height: auto; max-height: 360px; }
+    .svg-axis { stroke: #718093; stroke-width: 1.2; }
+    .svg-grid { stroke: #dfe3e6; stroke-width: 1; }
+    .svg-main { stroke: var(--navy-2); stroke-width: 3; fill: none; }
+    .svg-alt { stroke: var(--coral); stroke-width: 2.6; fill: none; }
+    .svg-guide { stroke: #8a755e; stroke-width: 1.5; stroke-dasharray: 6 5; fill: none; }
+    .svg-fill { fill: #dcebf2; stroke: var(--navy-2); stroke-width: 2; }
+    .svg-coral-fill { fill: #f6d5cc; stroke: var(--coral); stroke-width: 2; }
+    .svg-point { fill: var(--coral); stroke: #fff; stroke-width: 2; }
+    .svg-text { fill: var(--ink); font: 14px system-ui, sans-serif; }
+    .svg-small { fill: var(--muted); font: 12px system-ui, sans-serif; }
+    .visual-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; font-size: .88rem; }
+    .legend-line { display: inline-block; width: 22px; height: 3px; margin-right: 6px; vertical-align: middle; background: var(--navy-2); }
+    .legend-line.alt { background: var(--coral); }
+    .stage-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .stage-button { padding: 7px 11px; }
+    .stage-button[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    .step-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; counter-reset: step; }
+    .step-item {
+      counter-increment: step;
+      border-left: 3px solid var(--line);
+      padding: 4px 0 4px 18px;
+      animation: reveal .2s ease both;
+    }
+    .step-item::before {
+      content: "步驟 " counter(step);
+      display: block;
+      color: var(--coral);
+      font-size: .79rem;
+      font-weight: 800;
+      letter-spacing: .06em;
+    }
+    .step-item p { margin: 3px 0; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+    .step-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+    .secondary-button { padding: 9px 13px; background: var(--card); }
+    .secondary-button:hover { background: var(--blue-soft); }
+    .secondary-button.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .secondary-button:disabled { opacity: .45; cursor: not-allowed; }
+    .trap-list { margin: 0; padding-left: 1.25rem; }
+    .trap-list li + li { margin-top: 6px; }
+
+    .quiz-card {
+      margin-top: 34px;
+      padding: 23px;
+      background: var(--amber-soft);
+      border-top: 4px solid var(--amber);
+      border-radius: 12px;
+    }
+    .quiz-card h3 { margin: 0 0 6px; }
+    .quiz-card > p { margin: 0 0 16px; }
+    .quiz-options { display: grid; gap: 9px; }
+    .quiz-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid #dfc99f;
+      border-radius: 9px;
+      padding: 11px 13px;
+    }
+    .quiz-option:has(input:checked) { border-color: var(--amber); box-shadow: 0 0 0 2px rgba(156,100,26,.12); }
+    .quiz-option input { margin-top: .38em; }
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
+    .quiz-button { padding: 9px 15px; background: var(--navy); border-color: var(--navy); color: #fff; }
+    .quiz-button.retry { background: transparent; color: var(--ink); border-color: #c6ab78; }
+    .quiz-feedback { min-height: 28px; margin: 14px 0 0; font-weight: 700; }
+    .quiz-feedback.correct { color: var(--green); }
+    .quiz-feedback.incorrect { color: #9b3f2f; }
+    .question-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 32px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 820px) {
+      .hero-inner, .overview-intro { grid-template-columns: 1fr; }
+      .app-shell { grid-template-columns: 1fr; padding-top: 18px; }
+      .sidebar { position: static; }
+      .filter-group { grid-template-columns: repeat(3, 1fr); }
+      .question-nav { grid-template-columns: repeat(8, minmax(42px, 1fr)); }
+      .overview-button { grid-column: span 2; }
+      .concept-card { grid-template-columns: 1fr; gap: 12px; }
+    }
+    @media (max-width: 560px) {
+      .hero { padding: 23px 16px 20px; }
+      .app-shell { padding-left: 10px; padding-right: 10px; }
+      .panel { padding: 20px 16px; border-radius: 14px; }
+      .question-nav { grid-template-columns: repeat(5, minmax(42px, 1fr)); }
+      .filter-group { grid-template-columns: 1fr; }
+      .question-header { display: grid; }
+      .answer-box { width: 100%; }
+      .question-number { min-width: 49px; height: 49px; }
+      .visual-wrap { padding: 10px; margin-left: -5px; margin-right: -5px; }
+      .question-footer { flex-direction: column; }
+      .question-footer button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <header class="hero">
+    <div class="hero-inner">
+      <div>
+        <p class="eyebrow">高二數學・第一次段考</p>
+        <h1>看懂，比算完更重要。</h1>
+        <p class="hero-copy">15 題逐步拆解：先辨認題型，再選工具，最後用一題小測驗確認你真的會了。</p>
+      </div>
+      <div aria-label="小測驗完成進度">
+        <div class="progress-copy"><span>理解檢核</span><strong id="progress-label">0 / 15</strong></div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" aria-label="已完成題數">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="題目導覽">
+      <h2>篩選題型</h2>
+      <div class="filter-group" role="group" aria-label="題型篩選">
+        <button class="filter-button" type="button" data-filter="all" aria-pressed="true">全部 15 題</button>
+        <button class="filter-button" type="button" data-filter="multiple" aria-pressed="false">多選題</button>
+        <button class="filter-button" type="button" data-filter="fill" aria-pressed="false">選填題</button>
+      </div>
+      <h2>前往題目</h2>
+      <nav class="question-nav" id="question-nav"></nav>
+      <p class="sidebar-note">小測驗答對後，題號會出現 ✓。重新整理頁面即可重新練習。</p>
+    </aside>
+
+    <main id="main-content" tabindex="-1">
+      <section class="panel" id="content-panel" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <script>
+    'use strict';
+
+    const questions = [
+      {
+        id: '2', type: 'multiple', typeLabel: '多選題', title: '角度、弧度與週期的五個判斷',
+        concepts: ['弧度換算', '象限', '同界角', '弧長', '基本週期'],
+        answer: '①、③',
+        prompt: `下列敘述何者正確？<ol><li>1 弳 = 57.3°</li><li>點 <span class="formula">P(sin 3, cos 3)</span> 在第一象限</li><li>廣義角 <span class="formula">−π/5</span> 與 <span class="formula">19π/5</span> 為同界角</li><li>半徑 5、圓心角 30° 的弧長為 <span class="formula">5 × 30 = 150</span></li><li><span class="formula">y = |sin x|</span> 的基本週期也是 <span class="formula">2π</span></li></ol>`,
+        idea: '不要把它當成一大題硬算。五個選項分別對應五個獨立觀念；逐一問「單位對嗎、符號對嗎、是不是最小正週期」即可。',
+        visual: 'unitCircle',
+        steps: [
+          `弧度換角度：<span class="formula">1 rad = 180°/π ≈ 57.3°</span>，所以①正確。`,
+          `<span class="formula">π/2 &lt; 3 &lt; π</span>，故 <span class="formula">sin 3 &gt; 0、cos 3 &lt; 0</span>。點的座標是（正，負），位於第四象限，②錯。`,
+          `兩角相差 <span class="formula">19π/5 − (−π/5) = 4π = 2 × 2π</span>，是 <span class="formula">2π</span> 的整數倍，③正確。`,
+          `弧長公式 <span class="formula">s = rθ</span> 的 θ 必須是弧度。<span class="formula">30° = π/6</span>，所以弧長是 <span class="formula">5π/6</span>，④錯。`,
+          `<span class="formula">|sin(x+π)| = |−sin x| = |sin x|</span>，因此基本週期縮短為 <span class="formula">π</span>，⑤錯。結論為①③。`
+        ],
+        traps: ['把沒有度數符號的 3 當成 3°。', '把 P(sin 3, cos 3) 看成熟悉的 P(cos 3, sin 3)。', '使用弧長公式前忘記把角度換成弧度。', '「基本週期」必須是最小正週期。'],
+        quiz: { q: '半徑為 4、圓心角為 60° 的弧長是多少？', options: ['240', '4π/3', '2π/3', '8π/3'], correct: 1, explain: '60° = π/3，所以 s = rθ = 4 × π/3 = 4π/3。' }
+      },
+      {
+        id: '3', type: 'multiple', typeLabel: '多選題', title: '把 sin x − cos x 合成一條波',
+        concepts: ['輔助角', '振幅', '週期', '極值'], answer: '①、⑤',
+        prompt: `關於 <span class="formula">f(x) = sin x − cos x</span> 的圖形，下列何者正確？<ol><li>週期為 2π</li><li>最大值為 2</li><li>與 y 軸交於 (0,1)</li><li>振幅為 2√2</li><li>最小值為 −√2</li></ol>`,
+        idea: '看到 A sin x + B cos x，先合成單一正弦函數。振幅、最大值、最小值與週期就會同時現形。',
+        visual: 'wave3',
+        steps: [
+          `係數平方和開根號：<span class="formula">√(1² + (−1)²) = √2</span>，這就是振幅。`,
+          `利用 <span class="formula">sin(x−π/4) = (sin x−cos x)/√2</span>，得 <span class="formula">f(x)=√2 sin(x−π/4)</span>。`,
+          `括號內 x 的係數是 1，所以基本週期為 <span class="formula">2π</span>；最大值 √2、最小值 −√2。`,
+          `代入 x=0：<span class="formula">f(0)=−1</span>，y 軸交點為 (0,−1)。因此只有①⑤正確。`
+        ],
+        traps: ['把兩個係數直接相加，誤認最大值是 2。', '把「最大值減最小值」當成振幅；那其實是振幅的兩倍。', '求 y 軸交點時沒有真的代入 x=0。'],
+        quiz: { q: 'g(x) = 3 sin x + 4 cos x 的振幅與最大值為何？', options: ['振幅 7，最大值 7', '振幅 5，最大值 5', '振幅 1，最大值 5', '振幅 5，最大值 7'], correct: 1, explain: '振幅 = √(3²+4²)=5；沒有垂直位移時，最大值也等於 5。' }
+      },
+      {
+        id: '4', type: 'multiple', typeLabel: '多選題', title: '讀懂 −2 sin 3x 的每個參數',
+        concepts: ['值域', '週期', '對稱', '象限判號'], answer: '①、③、④',
+        prompt: `函數 <span class="formula">f(x)=−2 sin 3x</span>，下列何者為真？<ol><li>−2 ≤ f(x) ≤ 2</li><li>x=π/6 時有最大值</li><li>週期為 2π/3</li><li>圖形對稱於直線 x=π/2</li><li>f(2)&lt;0</li></ol>`,
+        idea: '先從外到內讀參數：−2 決定振幅與上下翻轉；3 決定週期縮短。特殊點與對稱再分別代入檢查。',
+        visual: 'wave4',
+        steps: [
+          `<span class="formula">−1≤sin 3x≤1</span>，乘上 −2 後仍有 <span class="formula">−2≤f(x)≤2</span>，①正確。`,
+          `<span class="formula">f(π/6)=−2 sin(π/2)=−2</span>，是最小值，不是最大值，②錯。`,
+          `基本週期 <span class="formula">T=2π/|3|=2π/3</span>，③正確。`,
+          `對任意 t，<span class="formula">f(π/2+t)=f(π/2−t)=2 cos 3t</span>，所以 x=π/2 是對稱軸，④正確。`,
+          `6 弧度在第四象限，<span class="formula">sin 6&lt;0</span>，所以 <span class="formula">f(2)=−2 sin 6&gt;0</span>，⑤錯。`
+        ],
+        traps: ['振幅要取 |−2|，但負號仍會交換極大、極小。', '週期除以 3，不是乘以 3。', '計算 f(2) 時把計算機設成角度模式。'],
+        quiz: { q: 'g(x)=−3 sin 2x 的基本週期，以及 x=π/4 時的狀態為何？', options: ['2π，極大值', 'π，極大值', 'π，極小值', 'π/2，極小值'], correct: 2, explain: 'T=2π/2=π；g(π/4)=−3 sin(π/2)=−3，是極小值。' }
+      },
+      {
+        id: 'A', type: 'fill', typeLabel: '選填題', title: '係數比對決定輔助角',
+        concepts: ['和角公式', '係數比對', '象限'], answer: '(2, 5π/3)',
+        prompt: `若 <span class="formula">sin x−√3 cos x = a sin(x+θ)</span>，其中 <span class="formula">a&gt;0，0≤θ≤2π</span>，求 (a,θ)。`,
+        idea: '先展開右邊，再把 sin x、cos x 的係數一一對上。係數的正負會告訴你 θ 在哪個象限。',
+        visual: 'vectorA',
+        steps: [
+          `展開：<span class="formula">a sin(x+θ)=a cosθ sin x+a sinθ cos x</span>。`,
+          `比係數得 <span class="formula">a cosθ=1、a sinθ=−√3</span>。平方相加：<span class="formula">a²=1+3=4</span>；因 a&gt;0，所以 a=2。`,
+          `因此 <span class="formula">cosθ=1/2、sinθ=−√3/2</span>，θ 在第四象限，參考角 π/3。`,
+          `依範圍選 <span class="formula">θ=2π−π/3=5π/3</span>，故答案為 <span class="formula">(2,5π/3)</span>。`
+        ],
+        traps: ['把 cos x 的係數誤對成 a cosθ。', '只看 cosθ=1/2 就選 π/3，忽略 sinθ 是負的。', '得到 −π/3 後忘記改寫成題目要求範圍內的 5π/3。'],
+        quiz: { q: '√3 sin x + cos x 可寫成下列哪一式？', options: ['2 sin(x+π/6)', '2 sin(x−π/6)', '√2 sin(x+π/3)', '2 cos(x+π/6)'], correct: 0, explain: '2 sin(x+π/6)=√3 sin x+cos x。' }
+      },
+      {
+        id: 'B', type: 'fill', typeLabel: '選填題', title: '開口皮帶：直線段加上兩段圓弧',
+        concepts: ['公切線', '弧長', '直角三角形'], answer: '6√3 + 6π 公尺',
+        prompt: `大小圓輪半徑分別為 1、4 公尺，圓心距 6 公尺。以不交叉皮帶使兩輪同方向旋轉，求皮帶長。`,
+        idea: '同方向代表「開口皮帶」。把整條皮帶拆成兩段相等的公切線，以及大小輪各一段接觸圓弧。',
+        visual: 'belt',
+        steps: [
+          `半徑差為 3、圓心距為 6。每段公切線是直角三角形的一股：<span class="formula">√(6²−3²)=3√3</span>；兩段共 6√3。`,
+          `設偏角 α，則 <span class="formula">sinα=(4−1)/6=1/2</span>，所以 <span class="formula">α=π/6</span>。`,
+          `大輪接觸角 <span class="formula">π+2α=4π/3</span>；小輪接觸角 <span class="formula">π−2α=2π/3</span>。`,
+          `圓弧總長 <span class="formula">4·4π/3+1·2π/3=6π</span>。加上直線段，皮帶長為 <span class="formula">6√3+6π</span>。`
+        ],
+        traps: ['開口皮帶用半徑差，不是半徑和。', '只算一段公切線。', '把兩個接觸角都當成 π。'],
+        quiz: { q: '本題兩段直線皮帶的總長是多少？', options: ['3√3', '6√3', '6', '12√3'], correct: 1, explain: '每段長 √(6²−3²)=3√3，共兩段，所以是 6√3。' }
+      },
+      {
+        id: 'C', type: 'fill', typeLabel: '選填題', title: '從最高、最低點反求正弦函數',
+        concepts: ['振幅', '中線', '相位平移'], answer: '(√2, 3π/4, √2)',
+        prompt: `函數 <span class="formula">y=a sin(x−b)+c</span>，a&gt;0、−π≤b&lt;π。圖上最低點為 (π/4,0)，最高點為 (5π/4,2√2)，求 (a,b,c)。`,
+        idea: '最高值與最低值先給出振幅和中線；再用「正弦在相位右方 π/2 到達最高點」找 b。',
+        visual: 'waveC',
+        steps: [
+          `振幅是高度差的一半：<span class="formula">a=(2√2−0)/2=√2</span>。`,
+          `中線是高低平均：<span class="formula">c=(2√2+0)/2=√2</span>。`,
+          `a&gt;0 時，最高點滿足 <span class="formula">x−b=π/2</span>。代入 x=5π/4：<span class="formula">b=5π/4−π/2=3π/4</span>。`,
+          `驗算最低點：<span class="formula">π/4−3π/4=−π/2</span>，故 y=−√2+√2=0。`
+        ],
+        traps: ['把最高值直接當振幅。', '把 c 當成 y 軸截距；c 其實是中線高度。', '誤以為 x−b 表示向左平移。'],
+        quiz: { q: '若最高值 7、最低值 1，則振幅 a 與中線 c 為何？', options: ['a=6，c=4', 'a=3，c=4', 'a=4，c=3', 'a=3，c=3'], correct: 1, explain: 'a=(7−1)/2=3，c=(7+1)/2=4。' }
+      },
+      {
+        id: 'D', type: 'fill', typeLabel: '選填題', title: '交點問題先變成方程式',
+        concepts: ['交點', '倍角公式', '因式分解'], answer: '5 個交點',
+        prompt: `在 <span class="formula">0≤x≤2π</span>，求 <span class="formula">y=sin x</span> 與 <span class="formula">y=−2 sin 2x</span> 的圖形共有幾個交點。`,
+        idea: '交點就是函數值相等。移項後先因式分解；看到 sin x 是因子時，不能直接約掉，否則會漏解。',
+        visual: 'intersectionsD',
+        steps: [
+          `令兩式相等：<span class="formula">sin x=−2 sin 2x=−4 sin x cos x</span>。`,
+          `移項並因式分解：<span class="formula">sin x(1+4 cos x)=0</span>。`,
+          `<span class="formula">sin x=0</span> 在閉區間給出 x=0、π、2π，共 3 解。`,
+          `<span class="formula">cos x=−1/4</span> 在完整一週期有 2 解。兩類不重複，所以共有 3+2=5 個交點。`
+        ],
+        traps: ['直接除以 sin x，會漏掉 x=0、π、2π。', '忘記區間包含兩個端點。', '認為 cos x=−1/4 只有一個解。'],
+        quiz: { q: '若區間改成 0&lt;x&lt;2π，交點會有幾個？', options: ['2 個', '3 個', '4 個', '5 個'], correct: 1, explain: '端點 0、2π 不再計入；留下 x=π 與 cos x=−1/4 的兩解，共 3 個。' }
+      },
+      {
+        id: 'E', type: 'fill', typeLabel: '選填題', title: '兩個週期內的根成對相加',
+        concepts: ['三角方程', '根的對稱', '週期'], answer: '10π',
+        prompt: `方程式 <span class="formula">sin x=−1/3</span> 在 <span class="formula">0≤x≤4π</span> 內所有實根的總和為何？`,
+        idea: '4π 含兩個完整週期。每週期的兩根可以對稱配對，反三角函數角度會互相消去，不必算小數。',
+        visual: 'rootsE',
+        steps: [
+          `令 <span class="formula">α=sin⁻¹(1/3)</span>，其中 0&lt;α&lt;π/2。`,
+          `第一週期兩根為 <span class="formula">π+α、2π−α</span>，根和為 3π。`,
+          `第二週期各加 2π，得到 <span class="formula">3π+α、4π−α</span>，根和為 7π。`,
+          `全部四根總和 <span class="formula">3π+7π=10π</span>。`
+        ],
+        traps: ['只找 0 到 2π 的兩根。', '直接使用負的反正弦主值，卻沒轉回指定區間。', '把 0、2π、4π 當成 sin x=−1/3 的解。'],
+        quiz: { q: '若只限制 0≤x≤2π，所有根的和是多少？', options: ['π', '2π', '3π', '4π'], correct: 2, explain: '(π+α)+(2π−α)=3π。' }
+      },
+      {
+        id: 'F', type: 'fill', typeLabel: '選填題', title: '兩條切線之間的圓弧道路',
+        concepts: ['切線', '圓心角', '弧長'], answer: '20√3π 公尺',
+        prompt: `兩直線公路延伸後在 C 夾 60°。A、B 分別在兩路上且 CA=CB=90 公尺；新圓弧在 A、B 與兩路相切。求圓弧長。`,
+        idea: '連接圓心 O 與切點 A、B，兩條半徑都垂直公路。先用半角 30° 找半徑，再從四邊形內角和找真正的圓心角。',
+        visual: 'roadArc',
+        steps: [
+          `圓心在 60° 的角平分線上，<span class="formula">∠ACO=30°</span>，且 OA⊥CA。`,
+          `在直角三角形 ACO 中，<span class="formula">r=90 tan30°=30√3</span>。`,
+          `四邊形 AOCB 另有兩個 90°，所以 <span class="formula">∠AOB=360°−90°−90°−60°=120°=2π/3</span>。`,
+          `弧長 <span class="formula">s=rθ=30√3·2π/3=20√3π</span>，也就是題目格式的 <span class="formula">40√3·π/2</span>。`
+        ],
+        traps: ['把兩切線夾角 60° 直接當圓心角。', '把 CA=90 當作半徑。', '代入弧長公式時忘記把 120° 換成 2π/3。'],
+        quiz: { q: '本題的圓心角 ∠AOB 是多少？', options: ['30°', '60°', '120°', '240°'], correct: 2, explain: '360° 扣掉兩個直角與 C 點的 60°，得到 120°。' }
+      },
+      {
+        id: 'H', type: 'fill', typeLabel: '選填題', title: '追蹤正弦圖形的三次變換',
+        concepts: ['縱向伸長', '橫向壓縮', '水平平移'], answer: '9',
+        prompt: `由 <span class="formula">g(x)=sin x</span> 依序：縱坐標變 3 倍、橫坐標縮為 1/2、向右平移 π/3，得到 <span class="formula">f(x)=a sin(bx−cπ)</span>。求 <span class="formula">a+2b+3c</span>。`,
+        idea: '每完成一次幾何變換，就立刻寫出新函數。橫坐標縮成一半，函數內部反而要乘 2；向右移則把 x 換成 x−h。',
+        visual: 'transformH',
+        steps: [
+          `縱坐標放大 3 倍：<span class="formula">k(x)=3 sin x</span>。`,
+          `橫坐標縮成原來 1/2：令新 x=舊 x/2，故舊 x=2x，得到 <span class="formula">q(x)=3 sin 2x</span>。`,
+          `向右平移 π/3：<span class="formula">f(x)=q(x−π/3)=3 sin(2x−2π/3)</span>。`,
+          `比對得 <span class="formula">a=3、b=2、c=2/3</span>，所以 <span class="formula">a+2b+3c=3+4+2=9</span>。`
+        ],
+        traps: ['橫坐標縮為 1/2 時誤寫 sin(x/2)。', '向右平移誤用 x+π/3。', '把 c 看成 1/3，忘記平移量還要被 b=2 乘進括號。'],
+        quiz: { q: '若最後改成向右平移 π/6，則 a+2b+3c 為何？', options: ['7', '8', '9', '10'], correct: 1, explain: 'f(x)=3 sin(2x−π/3)，故 c=1/3；3+4+1=8。' }
+      },
+      {
+        id: 'I', type: 'fill', typeLabel: '選填題', title: '正弦定理遇上二倍角',
+        concepts: ['正弦定理', '二倍角', '三角形'], answer: '√7 / 4',
+        prompt: `△ABC 中，AB=2、BC=3，且 <span class="formula">∠A=2∠C</span>，求 <span class="formula">sin C</span>。`,
+        idea: '先把「邊」與「對角」正確配對：BC=3 對 A，AB=2 對 C。正弦定理會自然產生 sin 2C。',
+        visual: 'triangleI',
+        steps: [
+          `由正弦定理：<span class="formula">3/sin A = 2/sin C</span>。`,
+          `代入 A=2C：<span class="formula">3/sin 2C=2/sin C</span>，交叉相乘得 <span class="formula">3 sin C=2 sin 2C</span>。`,
+          `使用 <span class="formula">sin 2C=2 sin C cos C</span>，且三角形內 sin C&gt;0，可約去 sin C，得到 <span class="formula">cos C=3/4</span>。`,
+          `<span class="formula">sin C=√(1−9/16)=√7/4</span>；三角形內角的正弦取正。`
+        ],
+        traps: ['把 AB=2 誤配給 ∠A。', '漏掉 sin 2C 公式中的係數 2。', '最後誤寫 ±√7/4；三角形內角的正弦為正。'],
+        quiz: { q: '若 BC=4、AB=3 且 A=2C，則 cos C 為何？', options: ['2/3', '3/4', '4/3', '1/2'], correct: 0, explain: '4/sin2C=3/sinC，得 4=6 cosC，所以 cosC=2/3。' }
+      },
+      {
+        id: 'J', type: 'fill', typeLabel: '選填題', title: '題目條件不足：別把平方根只取正',
+        concepts: ['平方恆等式', '二倍角', '正負分支'], answer: '±4√2 / 9',
+        prompt: `已知 <span class="formula">0&lt;θ&lt;π/2</span>，且 <span class="formula">sinθ+cosθ=4/3</span>，求 <span class="formula">cos 2θ</span>。`,
+        idea: '把 sinθ+cosθ 平方可得到 sin2θ；但從 sin2θ 回推 cos2θ 時要檢查正負。只知道 θ 是銳角，還不知道 θ 在 45° 的哪一側。',
+        visual: 'branchesJ',
+        steps: [
+          `平方：<span class="formula">(sinθ+cosθ)²=1+sin2θ=16/9</span>，所以 <span class="formula">sin2θ=7/9</span>。`,
+          `<span class="formula">cos²2θ=1−sin²2θ=1−49/81=32/81</span>。`,
+          `因此 <span class="formula">cos2θ=±√32/9=±4√2/9</span>。平方只告訴我們大小，沒有決定符號。`,
+          `若 0&lt;θ&lt;π/4，則 cos2θ&gt;0；若 π/4&lt;θ&lt;π/2，則 cos2θ&lt;0。原題兩者皆可能，因此嚴謹答案是正負兩值。`
+        ],
+        traps: ['看到 cos²2θ 就直接只取正根。', '以為 θ 是銳角便代表 2θ 也是銳角。', '忽略 θ 與 π/2−θ 有相同的 sinθ+cosθ，卻有相反的 cos2θ。'],
+        quiz: { q: '若補充 0&lt;θ&lt;π/4，cos 2θ 應取哪個值？', options: ['4√2/9', '−4√2/9', '7/9', '−7/9'], correct: 0, explain: '此時 0&lt;2θ&lt;π/2，cos2θ&gt;0，所以取正值 4√2/9。' }
+      },
+      {
+        id: 'K', type: 'fill', typeLabel: '選填題', title: '展開後用係數向量找最大值',
+        concepts: ['和角公式', '輔助角', '最大值'], answer: '√7',
+        prompt: `求函數 <span class="formula">y=2 cos(π/6+x)−sin x</span> 的最大值。`,
+        idea: '先展開 cos 的和角公式並合併同類項；A cos x+B sin x 的最大值就是係數向量的長度。',
+        visual: 'vectorK',
+        steps: [
+          `展開：<span class="formula">2 cos(π/6+x)=√3 cos x−sin x</span>。`,
+          `再扣掉題目原本的 sin x：<span class="formula">y=√3 cos x−2 sin x</span>。`,
+          `振幅 <span class="formula">R=√[(√3)²+(−2)²]=√7</span>。`,
+          `可寫成 <span class="formula">√7 cos(x+φ)</span>；cos 的最大值為 1，所以 y 的最大值為 √7。`
+        ],
+        traps: ['展開後漏掉題目外面的另一個 −sin x。', '把最大值寫成 √3+2。', '把 cos(A+B) 的中間符號展開成加號。'],
+        quiz: { q: 'y=3 cos x−4 sin x 的最大值是多少？', options: ['1', '5', '7', '25'], correct: 1, explain: '最大值是係數向量長度 √(3²+4²)=5。' }
+      },
+      {
+        id: 'L', type: 'fill', typeLabel: '選填題', title: '長方形裡用座標求視線夾角',
+        concepts: ['座標幾何', '斜率', '夾角公式'], answer: '11 / 16',
+        prompt: `長方形 ABCD 中，AD=BC=10、AB=DC=6。E 在 BC 上且 BE=(2/5)BC；F 在 DC 上且 DF=(2/3)CD。若 ∠EAF=θ，求 tanθ。`,
+        idea: '比例點都在長方形邊上，設座標最直接。找出 E、F 後，可用兩斜率夾角公式，也可用向量的行列式除以內積。',
+        visual: 'rectangleL',
+        steps: [
+          `設 A=(0,0)、B=(6,0)、C=(6,10)、D=(0,10)。`,
+          `BE=(2/5)·10=4，故 E=(6,4)；DF=(2/3)·6=4，故 F=(4,10)。`,
+          `向量 <span class="formula">AE=(6,4)、AF=(4,10)</span>。夾角正切可寫成 <span class="formula">|det(AE,AF)|/(AE·AF)</span>。`,
+          `分子 <span class="formula">|6·10−4·4|=44</span>，分母 <span class="formula">6·4+4·10=64</span>，所以 <span class="formula">tanθ=44/64=11/16</span>。`
+        ],
+        traps: ['把 BE=4 誤當作 EC=4。', '忘記 DF 是從 D 起算。', '只算斜率相減，漏掉夾角公式分母。'],
+        quiz: { q: '兩直線斜率分別為 1 與 1/3，其銳夾角 φ 的 tanφ 為何？', options: ['1/3', '1/2', '2/3', '4/3'], correct: 1, explain: 'tanφ=|(1−1/3)/(1+1·1/3)|=(2/3)/(4/3)=1/2。' }
+      },
+      {
+        id: 'M', type: 'fill', typeLabel: '選填題', title: '用對角線拆面積，再合併三角式',
+        concepts: ['直角三角形', '面積', '和差化積'], answer: '20√3',
+        prompt: `∠ABC=∠ADC=90°，∠BAC=α、∠ACD=β、α+β=60°。若 <span class="formula">sin∠DAB=4/5</span> 且 AC=10，求四邊形 ABCD 面積。`,
+        idea: 'AC 把四邊形切成兩個以 10 為斜邊的直角三角形。面積和會出現 sin2α+sin2β，再把題目給的 ∠DAB 轉成 cos(α−β)。',
+        visual: 'quadM',
+        steps: [
+          `△ABC 兩股為 <span class="formula">10 cosα、10 sinα</span>，面積 <span class="formula">25 sin2α</span>。`,
+          `△ACD 兩股為 <span class="formula">10 cosβ、10 sinβ</span>，面積 <span class="formula">25 sin2β</span>。`,
+          `總面積 <span class="formula">25(sin2α+sin2β)=50 sin(α+β)cos(α−β)=25√3 cos(α−β)</span>。`,
+          `<span class="formula">∠DAB=(90°−β)+α=90°+(α−β)</span>，所以 <span class="formula">sin∠DAB=cos(α−β)=4/5</span>。`,
+          `代回：<span class="formula">25√3·4/5=20√3</span>。`
+        ],
+        traps: ['兩個三角形面積應相加，不是相減。', '把 ∠DAC 寫成 β；它其實是 90°−β。', '把 sin2α+sin2β 錯合成 sin2(α+β)。'],
+        quiz: { q: '若其餘條件相同，但 sin∠DAB=3/5，面積是多少？', options: ['12√3', '15√3', '20√3', '25√3'], correct: 1, explain: '面積公式為 25√3·sin∠DAB，所以是 25√3·3/5=15√3。' }
+      }
+    ];
+
+    const conceptGroups = [
+      { title: '弧度、同界角、弧長與週期', copy: '先把角的單位處理正確，再談弧長、週期與象限。', ids: ['2','4','F'] },
+      { title: '正弦函數合成、振幅、相位與變換', copy: 'A sin x+B cos x 的係數長度決定振幅；括號內的形式決定水平變換。', ids: ['3','A','C','H','K'] },
+      { title: '三角方程、交點與根的對稱', copy: '把圖形交點翻譯成方程式，保留所有因子，再利用一週期內的對稱。', ids: ['D','E'] },
+      { title: '正弦定理、倍角與和差公式', copy: '正確配對邊與對角，再用倍角或和差公式把資訊接起來。', ids: ['I','J','M'] },
+      { title: '切線、圓弧、座標幾何與面積', copy: '幾何圖先補上垂直、半角或座標，複雜外形就能拆成熟悉的小塊。', ids: ['B','F','L','M'] }
+    ];
+
+    const appState = { active: 'overview', filter: 'all', completed: new Set(), revealed: new Map() };
+    const panel = document.getElementById('content-panel');
+    const nav = document.getElementById('question-nav');
+
+    function esc(value) {
+      return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function visibleQuestions() {
+      return questions.filter(q => appState.filter === 'all' || q.type === appState.filter);
+    }
+
+    function renderNav() {
+      const visible = visibleQuestions();
+      nav.innerHTML = `<button type="button" class="nav-button overview-button" data-target="overview" ${appState.active === 'overview' ? 'aria-current="page"' : ''}>觀念總覽</button>` +
+        visible.map(q => `<button type="button" class="nav-button ${appState.completed.has(q.id) ? 'completed' : ''}" data-target="${q.id}" ${appState.active === q.id ? 'aria-current="page"' : ''} aria-label="第 ${q.id} 題${appState.completed.has(q.id) ? '，小測驗已完成' : ''}">${q.id}</button>`).join('');
+      nav.querySelectorAll('[data-target]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.target)));
+    }
+
+    function renderOverview() {
+      panel.innerHTML = `
+        <div class="overview-intro">
+          <div>
+            <p class="page-kicker">CONCEPT MAP</p>
+            <h2>先建立地圖，再走進每一題</h2>
+            <p class="lead">這份教材不是把 15 份詳解排成一長串，而是把它們連成五組觀念。先判斷題型，再選擇最短的工具。</p>
+          </div>
+          <div class="overview-mark" aria-label="正弦函數示意">sin&nbsp;θ</div>
+        </div>
+        <div class="concept-grid">
+          ${conceptGroups.map((g, i) => `
+            <article class="concept-card">
+              <div><p class="page-kicker">0${i+1}</p><h3>${g.title}</h3><p>${g.copy}</p></div>
+              <div class="concept-question-links" aria-label="${g.title}相關題目">
+                ${g.ids.map(id => `<button type="button" class="concept-link" data-jump="${id}">第 ${id} 題</button>`).join('')}
+              </div>
+            </article>`).join('')}
+        </div>`;
+      panel.querySelectorAll('[data-jump]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.jump)));
+    }
+
+    function renderQuestion(q) {
+      const revealed = appState.revealed.get(q.id) || 0;
+      panel.innerHTML = `
+        <article>
+          <header class="question-header">
+            <div class="question-title">
+              <div class="question-number" aria-hidden="true">${q.id}</div>
+              <div><p class="page-kicker">${q.typeLabel}</p><h2>第 ${q.id} 題｜${q.title}</h2><p class="question-meta">${q.concepts.join('・')}</p></div>
+            </div>
+            <div class="answer-box"><small>正確答案</small><strong>${q.answer}</strong></div>
+          </header>
+          <div class="question-prompt"><strong>題目重述</strong><br>${q.prompt}</div>
+
+          <section class="section-block" aria-labelledby="idea-${q.id}">
+            <div class="section-heading"><span>START</span><h3 id="idea-${q.id}">看到題目，最初先想什麼？</h3></div>
+            <div class="idea-box"><p>${q.idea}</p><div class="concept-tags">${q.concepts.map(c => `<span class="concept-tag">${c}</span>`).join('')}</div></div>
+          </section>
+
+          ${renderVisual(q.visual, q.id)}
+
+          <section class="section-block" aria-labelledby="steps-${q.id}">
+            <div class="section-heading"><span>SOLVE</span><h3 id="steps-${q.id}">逐步作答</h3></div>
+            <ol class="step-list" id="step-list-${q.id}">
+              ${q.steps.slice(0, revealed).map(step => `<li class="step-item"><p>${step}</p></li>`).join('')}
+            </ol>
+            ${revealed === 0 ? '<p class="question-meta" id="step-empty">先自己想一遍，再按「顯示下一步」。</p>' : ''}
+            <div class="step-actions">
+              <button type="button" class="secondary-button primary" id="next-step" ${revealed >= q.steps.length ? 'disabled' : ''}>${revealed >= q.steps.length ? '步驟已全部顯示' : '顯示下一步'}</button>
+              <button type="button" class="secondary-button" id="show-all" ${revealed >= q.steps.length ? 'disabled' : ''}>顯示全部</button>
+              <button type="button" class="secondary-button" id="collapse-steps" ${revealed === 0 ? 'disabled' : ''}>全部收合</button>
+            </div>
+          </section>
+
+          <section class="section-block" aria-labelledby="traps-${q.id}">
+            <div class="section-heading"><span>CHECK</span><h3 id="traps-${q.id}">常見陷阱</h3></div>
+            <ul class="trap-list">${q.traps.map(t => `<li>${t}</li>`).join('')}</ul>
+          </section>
+
+          ${renderQuiz(q)}
+          ${renderQuestionFooter(q.id)}
+        </article>`;
+      bindQuestionEvents(q);
+    }
+
+    function renderQuiz(q) {
+      return `<section class="quiz-card" aria-labelledby="quiz-title-${q.id}">
+        <p class="page-kicker">MINI CHECK</p>
+        <h3 id="quiz-title-${q.id}">反思小測驗</h3>
+        <p>${q.quiz.q}</p>
+        <div class="quiz-options">
+          ${q.quiz.options.map((opt, i) => `<label class="quiz-option"><input type="radio" name="quiz-${q.id}" value="${i}"><span>${opt}</span></label>`).join('')}
+        </div>
+        <div class="quiz-actions"><button type="button" class="quiz-button" id="check-quiz">檢查答案</button><button type="button" class="quiz-button retry" id="retry-quiz">重新作答</button></div>
+        <p class="quiz-feedback" id="quiz-feedback" aria-live="polite"></p>
+      </section>`;
+    }
+
+    function renderQuestionFooter(id) {
+      const visible = visibleQuestions();
+      const index = visible.findIndex(q => q.id === id);
+      const prev = visible[index - 1];
+      const next = visible[index + 1];
+      return `<footer class="question-footer">
+        <button type="button" class="secondary-button" data-footer-target="${prev ? prev.id : 'overview'}">← ${prev ? '第 '+prev.id+' 題' : '觀念總覽'}</button>
+        <button type="button" class="secondary-button primary" data-footer-target="${next ? next.id : 'overview'}">${next ? '第 '+next.id+' 題' : '回到觀念總覽'} →</button>
+      </footer>`;
+    }
+
+    function bindQuestionEvents(q) {
+      document.getElementById('next-step').addEventListener('click', () => {
+        const now = Math.min((appState.revealed.get(q.id) || 0) + 1, q.steps.length);
+        appState.revealed.set(q.id, now);
+        renderQuestion(q);
+        document.getElementById(`steps-${q.id}`).scrollIntoView({ block: 'nearest' });
+      });
+      document.getElementById('show-all').addEventListener('click', () => {
+        appState.revealed.set(q.id, q.steps.length);
+        renderQuestion(q);
+        document.getElementById(`steps-${q.id}`).scrollIntoView({ block: 'nearest' });
+      });
+      document.getElementById('collapse-steps').addEventListener('click', () => {
+        appState.revealed.set(q.id, 0);
+        renderQuestion(q);
+      });
+      document.getElementById('check-quiz').addEventListener('click', () => checkQuiz(q));
+      document.getElementById('retry-quiz').addEventListener('click', () => resetQuiz(q));
+      panel.querySelectorAll('[data-footer-target]').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.footerTarget)));
+      if (q.visual === 'transformH') bindTransformControls();
+    }
+
+    function checkQuiz(q) {
+      const choice = panel.querySelector(`input[name="quiz-${q.id}"]:checked`);
+      const feedback = document.getElementById('quiz-feedback');
+      if (!choice) {
+        feedback.className = 'quiz-feedback incorrect';
+        feedback.textContent = '請先選一個答案，再檢查。';
+        return;
+      }
+      const correct = Number(choice.value) === q.quiz.correct;
+      feedback.className = `quiz-feedback ${correct ? 'correct' : 'incorrect'}`;
+      feedback.textContent = `${correct ? '答對了！' : '再想一下。'} ${q.quiz.explain}`;
+      if (correct) {
+        appState.completed.add(q.id);
+        updateProgress();
+        renderNav();
+      }
+    }
+
+    function resetQuiz(q) {
+      panel.querySelectorAll(`input[name="quiz-${q.id}"]`).forEach(input => { input.checked = false; });
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.className = 'quiz-feedback';
+      feedback.textContent = '';
+    }
+
+    function updateProgress() {
+      const done = appState.completed.size;
+      document.getElementById('progress-label').textContent = `${done} / ${questions.length}`;
+      document.getElementById('progress-bar').style.width = `${done / questions.length * 100}%`;
+      document.querySelector('.progress-track').setAttribute('aria-valuenow', done);
+    }
+
+    function navigate(target) {
+      appState.active = target;
+      renderNav();
+      if (target === 'overview') renderOverview();
+      else {
+        const q = questions.find(item => item.id === target);
+        if (q) renderQuestion(q);
+      }
+      document.getElementById('main-content').scrollIntoView({ block: 'start' });
+    }
+
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      button.addEventListener('click', () => {
+        appState.filter = button.dataset.filter;
+        document.querySelectorAll('[data-filter]').forEach(btn => btn.setAttribute('aria-pressed', String(btn === button)));
+        if (appState.active !== 'overview' && !visibleQuestions().some(q => q.id === appState.active)) appState.active = 'overview';
+        renderNav();
+        if (appState.active === 'overview') renderOverview();
+      });
+    });
+
+    function plotPath(fn, xmin, xmax, ymin, ymax, samples = 240) {
+      const left = 48, right = 580, top = 18, bottom = 226;
+      const sx = x => left + (x - xmin) / (xmax - xmin) * (right - left);
+      const sy = y => bottom - (y - ymin) / (ymax - ymin) * (bottom - top);
+      let d = '';
+      for (let i = 0; i <= samples; i++) {
+        const x = xmin + (xmax - xmin) * i / samples;
+        d += `${i ? 'L' : 'M'}${sx(x).toFixed(2)},${sy(fn(x)).toFixed(2)} `;
+      }
+      return d;
+    }
+
+    function graphFrame(inner, title, desc, legend = '') {
+      return `<div class="visual-wrap"><figure>${legend}<svg class="math-visual" viewBox="0 0 600 255" role="img" aria-labelledby="v-title v-desc"><title id="v-title">${title}</title><desc id="v-desc">${desc}</desc><line class="svg-axis" x1="48" y1="122" x2="580" y2="122"/><line class="svg-axis" x1="48" y1="18" x2="48" y2="226"/>${inner}<text class="svg-small" x="568" y="144">x</text><text class="svg-small" x="32" y="28">y</text></svg><figcaption>${desc}</figcaption></figure></div>`;
+    }
+
+    function renderVisual(key, id) {
+      const visual = visuals[key];
+      return visual ? visual(id) : '';
+    }
+
+    const visuals = {
+      unitCircle: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 280" role="img" aria-label="P(sin3, cos3) 位於第四象限"><line class="svg-axis" x1="60" y1="140" x2="340" y2="140"/><line class="svg-axis" x1="200" y1="20" x2="200" y2="260"/><circle cx="200" cy="140" r="92" class="svg-fill"/><line x1="200" y1="140" x2="213" y2="231" class="svg-alt"/><circle cx="213" cy="231" r="7" class="svg-point"/><path d="M225 140 A25 25 0 0 1 204 165" class="svg-guide"/><text class="svg-text" x="226" y="238">P(sin 3, cos 3)</text><text class="svg-small" x="224" y="219">（＋，−）</text><text class="svg-text" x="380" y="82">先看符號：</text><text class="svg-text" x="380" y="112">sin 3 &gt; 0</text><text class="svg-text" x="380" y="142">cos 3 &lt; 0</text><text class="svg-text" x="380" y="184">所以 P 在第四象限</text></svg><figcaption>座標順序是 (sin 3, cos 3)，不是常見的 (cos 3, sin 3)。</figcaption></figure></div>`,
+      wave3: () => {
+        const p = plotPath(x => Math.sin(x)-Math.cos(x), 0, Math.PI*2, -1.7, 1.7);
+        return graphFrame(`<line class="svg-guide" x1="48" y1="35" x2="580" y2="35"/><line class="svg-guide" x1="48" y1="209" x2="580" y2="209"/><path class="svg-main" d="${p}"/><text class="svg-small" x="505" y="30">√2</text><text class="svg-small" x="500" y="222">−√2</text>`, 'sin x 減 cos x 的圖形', '合成後是振幅 √2、週期 2π 的正弦波。');
+      },
+      wave4: () => {
+        const p = plotPath(x => -2*Math.sin(3*x), 0, Math.PI*2, -2.35, 2.35);
+        const xline = 48 + .25*(580-48);
+        return graphFrame(`<path class="svg-main" d="${p}"/><line class="svg-guide" x1="${xline}" y1="18" x2="${xline}" y2="226"/><text class="svg-small" x="${xline+5}" y="32">x=π/2</text>`, '負二倍正弦三 x', '負號使波形上下翻轉；虛線兩側互為鏡像。');
+      },
+      vectorA: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 280" role="img" aria-label="向量 (1,負根號3) 位於第四象限，長度為2"><line class="svg-axis" x1="80" y1="95" x2="420" y2="95"/><line class="svg-axis" x1="160" y1="25" x2="160" y2="245"/><line x1="160" y1="95" x2="300" y2="215" class="svg-alt"/><path d="M288 207 L300 215 L291 199" fill="none" stroke="var(--coral)" stroke-width="3"/><line class="svg-guide" x1="300" y1="95" x2="300" y2="215"/><text class="svg-text" x="310" y="218">(1, −√3)</text><text class="svg-text" x="220" y="170">長度 a=2</text><text class="svg-small" x="318" y="160">第四象限</text><text class="svg-text" x="445" y="82">cos θ = 1/2</text><text class="svg-text" x="445" y="115">sin θ = −√3/2</text><text class="svg-text" x="445" y="162">θ = 5π/3</text></svg><figcaption>把兩個係數看成一支向量，長度給振幅，方向給相位角。</figcaption></figure></div>`,
+      belt: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 280" role="img" aria-label="大小圓輪的開口皮帶"><circle cx="155" cy="145" r="34" class="svg-fill"/><circle cx="430" cy="145" r="82" class="svg-coral-fill"/><path d="M155 111 L430 63 A82 82 0 1 1 430 227 L155 179 A34 34 0 1 1 155 111" fill="none" stroke="var(--ink)" stroke-width="5"/><line class="svg-guide" x1="155" y1="145" x2="430" y2="145"/><text class="svg-text" x="142" y="150">r=1</text><text class="svg-text" x="410" y="150">R=4</text><text class="svg-small" x="265" y="137">圓心距 6</text><text class="svg-small" x="255" y="72">每段直線 3√3</text></svg><figcaption>同方向旋轉採開口皮帶：兩段公切線相等，大輪與小輪的接觸角一增一減。</figcaption></figure></div>`,
+      waveC: () => {
+        const p = plotPath(x => Math.SQRT2*Math.sin(x-3*Math.PI/4)+Math.SQRT2, 0, Math.PI*2, -.3, 3.1);
+        const sx = x => 48 + x/(2*Math.PI)*(580-48); const sy = y => 226 - (y+.3)/3.4*(226-18);
+        return graphFrame(`<path class="svg-main" d="${p}"/><line class="svg-guide" x1="48" y1="${sy(Math.SQRT2)}" x2="580" y2="${sy(Math.SQRT2)}"/><circle class="svg-point" cx="${sx(Math.PI/4)}" cy="${sy(0)}" r="6"/><circle class="svg-point" cx="${sx(5*Math.PI/4)}" cy="${sy(2*Math.SQRT2)}" r="6"/><text class="svg-small" x="${sx(Math.PI/4)+7}" y="${sy(0)-7}">(π/4,0)</text><text class="svg-small" x="${sx(5*Math.PI/4)+7}" y="${sy(2*Math.SQRT2)+18}">(5π/4,2√2)</text><text class="svg-small" x="500" y="${sy(Math.SQRT2)-6}">中線 y=√2</text>`, '由最高與最低點反求正弦函數', '中線是 √2，最高與最低各離中線 √2。');
+      },
+      intersectionsD: () => {
+        const p1=plotPath(x=>Math.sin(x),0,2*Math.PI,-2.2,2.2); const p2=plotPath(x=>-2*Math.sin(2*x),0,2*Math.PI,-2.2,2.2);
+        const xs=[0,Math.acos(-.25),Math.PI,2*Math.PI-Math.acos(-.25),2*Math.PI];
+        const sx=x=>48+x/(2*Math.PI)*532, sy=y=>226-(y+2.2)/4.4*208;
+        const pts=xs.map(x=>`<circle class="svg-point" cx="${sx(x)}" cy="${sy(Math.sin(x))}" r="5"/>`).join('');
+        return graphFrame(`<path class="svg-main" d="${p1}"/><path class="svg-alt" d="${p2}"/>${pts}`, '兩條三角函數曲線的五個交點', '三個交點來自 sin x=0，另兩個來自 cos x=−1/4。', '<div class="visual-legend"><span><i class="legend-line"></i>sin x</span><span><i class="legend-line alt"></i>−2 sin 2x</span></div>');
+      },
+      rootsE: () => {
+        const p=plotPath(x=>Math.sin(x),0,4*Math.PI,-1.3,1.3); const alpha=Math.asin(1/3); const xs=[Math.PI+alpha,2*Math.PI-alpha,3*Math.PI+alpha,4*Math.PI-alpha];
+        const sx=x=>48+x/(4*Math.PI)*532, sy=y=>226-(y+1.3)/2.6*208; const y=sy(-1/3);
+        return graphFrame(`<path class="svg-main" d="${p}"/><line class="svg-alt" x1="48" y1="${y}" x2="580" y2="${y}"/>${xs.map(x=>`<circle class="svg-point" cx="${sx(x)}" cy="${y}" r="5"/>`).join('')}<text class="svg-small" x="493" y="${y-8}">y=−1/3</text>`, '正弦曲線在兩週期內的四個根', '四個交點分成兩組，根和分別是 3π 與 7π。');
+      },
+      roadArc: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 320" role="img" aria-label="兩條公路與相切圓弧"><path d="M300 35 L95 285 M300 35 L505 285" class="svg-main"/><path d="M155 212 Q300 318 445 212" class="svg-alt"/><line class="svg-guide" x1="300" y1="35" x2="300" y2="250"/><line class="svg-guide" x1="300" y1="250" x2="155" y2="212"/><line class="svg-guide" x1="300" y1="250" x2="445" y2="212"/><circle cx="300" cy="250" r="5" class="svg-point"/><text class="svg-text" x="292" y="28">C</text><text class="svg-text" x="136" y="213">A</text><text class="svg-text" x="450" y="213">B</text><text class="svg-text" x="307" y="268">O</text><text class="svg-text" x="312" y="88">60°</text><text class="svg-small" x="177" y="125">CA=90</text><text class="svg-small" x="359" y="125">CB=90</text><text class="svg-small" x="325" y="235">r=30√3</text><text class="svg-small" x="253" y="294">圓心角 120°</text></svg><figcaption>切線夾角 60°，對應的較小圓弧之圓心角是 120°。</figcaption></figure></div>`,
+      transformH: () => `<div class="visual-wrap"><div class="stage-controls" role="group" aria-label="圖形變換階段"><button class="stage-button" type="button" data-stage="0" aria-pressed="true">g：原圖</button><button class="stage-button" type="button" data-stage="1" aria-pressed="false">k：縱向 ×3</button><button class="stage-button" type="button" data-stage="2" aria-pressed="false">q：橫向 ×1/2</button><button class="stage-button" type="button" data-stage="3" aria-pressed="false">f：右移 π/3</button></div><figure><svg class="math-visual" id="transform-svg" viewBox="0 0 600 255" role="img" aria-labelledby="transform-title transform-desc"><title id="transform-title">正弦圖形三次變換</title><desc id="transform-desc">使用按鈕查看縱向伸長、橫向壓縮與向右平移。</desc><line class="svg-axis" x1="48" y1="122" x2="580" y2="122"/><line class="svg-axis" x1="48" y1="18" x2="48" y2="226"/><path class="svg-main" id="transform-path" d="${plotPath(x=>Math.sin(x),0,2*Math.PI,-3.4,3.4)}"/><text class="svg-text" id="transform-label" x="365" y="38">g(x)=sin x</text></svg><figcaption id="transform-caption">原始圖形：振幅 1、週期 2π。</figcaption></figure></div>`,
+      triangleI: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 300" role="img" aria-label="AB為2、BC為3且A角是C角兩倍的三角形"><path d="M110 245 L350 55 L505 245 Z" class="svg-fill"/><text class="svg-text" x="92" y="266">A = 2C</text><text class="svg-text" x="344" y="43">B</text><text class="svg-text" x="512" y="266">C</text><text class="svg-text" x="206" y="130">AB = 2</text><text class="svg-text" x="430" y="145">BC = 3</text><path d="M140 245 A30 30 0 0 1 128 221" class="svg-alt"/><path d="M470 245 A35 35 0 0 0 480 218" class="svg-alt"/><text class="svg-small" x="248" y="278">邊 3 ↔ A；邊 2 ↔ C</text></svg><figcaption>套正弦定理前，先把每一邊和它的對角配對。</figcaption></figure></div>`,
+      branchesJ: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 280" role="img" aria-label="θ位於45度兩側時產生相反的cos2θ"><line class="svg-axis" x1="70" y1="225" x2="530" y2="225"/><line class="svg-guide" x1="300" y1="45" x2="300" y2="225"/><path d="M125 225 A175 175 0 0 1 475 225" class="svg-main"/><line x1="300" y1="225" x2="405" y2="85" class="svg-alt"/><line x1="300" y1="225" x2="195" y2="85" class="svg-main"/><text class="svg-text" x="392" y="77">θ₁&lt;45°</text><text class="svg-text" x="118" y="77">θ₂&gt;45°</text><text class="svg-text" x="355" y="176">cos 2θ₁ &gt; 0</text><text class="svg-text" x="85" y="176">cos 2θ₂ &lt; 0</text><text class="svg-small" x="229" y="250">兩角關於 45° 對稱</text></svg><figcaption>θ 與 π/2−θ 的 sinθ+cosθ 相同，但 cos2θ 正負相反。</figcaption></figure></div>`,
+      vectorK: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 280" role="img" aria-label="係數向量根號3與負2的長度是根號7"><line class="svg-axis" x1="85" y1="80" x2="420" y2="80"/><line class="svg-axis" x1="155" y1="25" x2="155" y2="250"/><line x1="155" y1="80" x2="350" y2="220" class="svg-alt"/><line class="svg-guide" x1="350" y1="80" x2="350" y2="220"/><text class="svg-text" x="360" y="224">(√3, −2)</text><text class="svg-text" x="225" y="166">R=√7</text><text class="svg-small" x="230" y="72">水平係數 √3</text><text class="svg-small" x="360" y="155">垂直係數 −2</text><text class="svg-text" x="438" y="98">最大值 = 向量長度</text><text class="svg-text" x="472" y="138">= √7</text></svg><figcaption>A cos x+B sin x 的振幅，就是係數向量 (A,B) 的長度。</figcaption></figure></div>`,
+      rectangleL: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 360" role="img" aria-label="長方形游泳池內E、F兩點與A的視線"><rect x="100" y="55" width="300" height="250" class="svg-fill"/><line x1="100" y1="305" x2="400" y2="205" class="svg-alt"/><line x1="100" y1="305" x2="300" y2="55" class="svg-main"/><circle cx="400" cy="205" r="6" class="svg-point"/><circle cx="300" cy="55" r="6" class="svg-point"/><text class="svg-text" x="78" y="327">A (0,0)</text><text class="svg-text" x="407" y="327">B</text><text class="svg-text" x="407" y="50">C</text><text class="svg-text" x="72" y="50">D</text><text class="svg-text" x="408" y="207">E (6,4)</text><text class="svg-text" x="282" y="40">F (4,10)</text><path d="M145 305 A45 45 0 0 0 133 278" class="svg-guide"/><text class="svg-text" x="148" y="286">θ</text><text class="svg-small" x="222" y="337">AB=6</text><text class="svg-small" x="64" y="183">AD=10</text></svg><figcaption>把 A 設為原點後，比例位置直接變成 E=(6,4)、F=(4,10)。</figcaption></figure></div>`,
+      quadM: () => `<div class="visual-wrap"><figure><svg class="math-visual" viewBox="0 0 600 340" role="img" aria-label="四邊形由對角線AC分成兩個直角三角形"><path d="M80 270 L470 270 L420 175 L270 40 Z" class="svg-coral-fill"/><path d="M80 270 L420 175 L470 270 Z" class="svg-fill"/><line x1="80" y1="270" x2="420" y2="175" class="svg-main"/><text class="svg-text" x="61" y="292">A</text><text class="svg-text" x="476" y="292">B</text><text class="svg-text" x="427" y="174">C</text><text class="svg-text" x="265" y="32">D</text><text class="svg-text" x="240" y="235">AC=10</text><text class="svg-text" x="120" y="258">α</text><text class="svg-text" x="397" y="156">β</text><path d="M447 270 L447 247 L470 247" class="svg-guide"/><path d="M255 54 L270 70 L286 55" class="svg-guide"/><text class="svg-small" x="118" y="115">△ACD 面積 25 sin 2β</text><text class="svg-small" x="330" y="295">△ABC 面積 25 sin 2α</text></svg><figcaption>沿 AC 分割後，四邊形面積就是兩個直角三角形的面積和。</figcaption></figure></div>`
+    };
+
+    function bindTransformControls() {
+      const stages = [
+        { fn: x=>Math.sin(x), label:'g(x)=sin x', caption:'原始圖形：振幅 1、週期 2π。' },
+        { fn: x=>3*Math.sin(x), label:'k(x)=3 sin x', caption:'縱坐標放大 3 倍：振幅變成 3。' },
+        { fn: x=>3*Math.sin(2*x), label:'q(x)=3 sin 2x', caption:'橫坐標縮為 1/2：週期變成 π。' },
+        { fn: x=>3*Math.sin(2*(x-Math.PI/3)), label:'f(x)=3 sin(2x−2π/3)', caption:'整張圖向右平移 π/3；振幅與週期不變。' }
+      ];
+      panel.querySelectorAll('[data-stage]').forEach(button => button.addEventListener('click', () => {
+        const stage=stages[Number(button.dataset.stage)];
+        panel.querySelectorAll('[data-stage]').forEach(btn => btn.setAttribute('aria-pressed', String(btn===button)));
+        document.getElementById('transform-path').setAttribute('d', plotPath(stage.fn,0,2*Math.PI,-3.4,3.4));
+        document.getElementById('transform-label').textContent=stage.label;
+        document.getElementById('transform-caption').textContent=stage.caption;
+      }));
+    }
+
+    renderNav();
+    renderOverview();
+    updateProgress();
+  </script>
+</body>
+</html>
