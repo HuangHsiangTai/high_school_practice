@@ -1,0 +1,4 @@
+interface:
+  display_name: "create_html"
+  short_description: "將高中數理生科考卷照片與指定錯題，製成可離線使用的互動解題教材"
+  default_prompt: "請使用 $create-html，讀取指定考卷 JPG 與錯題清單，建立適合高中生的離線互動解題 HTML。"
